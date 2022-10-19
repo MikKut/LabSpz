@@ -170,10 +170,11 @@ int ShowFullInfoAboutProcessor(HRESULT hRes, IWbemLocator* pLocator, IWbemServic
 
     return 0;
 }
+
 int ShowDescriptionAndNumberOfFunctionKeysOfKeyboard(HRESULT hRes, IWbemLocator* pLocator, IWbemServices* pService)
 {
     IEnumWbemClassObject* pEnumerator = NULL;
-    if (FAILED(hRes = pService->ExecQuery(BSTR(L"WQL"), BSTR(L"SELECT * FROM Win32_Keyboard"), WBEM_FLAG_FORWARD_ONLY, NULL, &pEnumerator))) {
+    if (FAILED(hRes = pService->ExecQuery(BSTR(L"WQL"), BSTR(L"SELECT * FROM Win32_Processor"), WBEM_FLAG_FORWARD_ONLY, NULL, &pEnumerator))) {
         pLocator->Release();
         pService->Release();
         cout << "Unable to retrive desktop monitors: " << std::hex << hRes << endl;
@@ -218,6 +219,7 @@ void CreateMsAccessProcess()
     CreateProcess(pathToWord, NULL, NULL, NULL, TRUE
         , REALTIME_PRIORITY_CLASS, NULL, NULL, &si, &pi);
 }
+
 int ShowInfoAboutThreads(HRESULT hRes, IWbemLocator* pLocator, IWbemServices* pService, int activeProcessId
     , int numberOfThreads)
 {
@@ -283,6 +285,7 @@ int ShowInfoAboutThreads(HRESULT hRes, IWbemLocator* pLocator, IWbemServices* pS
     }
     return 0;
 }
+
 int ShowInfoAboutRunningProcess(HRESULT hRes, IWbemLocator* pLocator, IWbemServices* pService)
 {
     CreateMsAccessProcess();
@@ -354,6 +357,7 @@ void PrintFail(const char* text, HRESULT res) {
     cout << text << std::hex << res << endl;
     SetConsoleTextAttribute(hConsole, 7);
 }
+
 void PrintSuccess(const char* text) {
     SetConsoleTextAttribute(hConsole, 10);
     cout << text << endl;
@@ -361,9 +365,7 @@ void PrintSuccess(const char* text) {
 }
 
 int main()
-{
-    
-    
+{    
     hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
     //First
     HRESULT hRes = CoInitializeEx(NULL, COINIT_MULTITHREADED);
@@ -442,15 +444,20 @@ int main()
     return 0;
     */
     cout<<endl<<endl<<GetProcessorInfo(hRes, pLocator, pService);
+
+
+
     pService->Release();
     pLocator->Release();
     CoUninitialize();
     return 0;
 }
+
+
 int GetProcessorInfo(HRESULT hRes, IWbemLocator* pLocator, IWbemServices* pService)
 {
     IEnumWbemClassObject* pEnumerator = NULL;
-    if (FAILED(hRes = pService->ExecQuery(BSTR(L"WQL"), BSTR(L"SELECT Manufacturer,MaxClockSpeed,Name FROM Win32_Processor"),
+    if (FAILED(hRes = pService->ExecQuery(BSTR(L"WQL"), BSTR(L"SELECT Manufacturer, PowerManagementSupported, Name FROM Win32_Processor"),
         WBEM_FLAG_FORWARD_ONLY, NULL, &pEnumerator))) {
         pLocator->Release();
         pService->Release();
@@ -459,7 +466,7 @@ int GetProcessorInfo(HRESULT hRes, IWbemLocator* pLocator, IWbemServices* pServi
     }
 
     IWbemClassObject* pclsObj;
-    ULONG uReturn = 0;
+    /*ULONG uReturn = 0;
     while (pEnumerator)
     {
         HRESULT hr = pEnumerator->Next(WBEM_INFINITE, 1,
@@ -500,10 +507,58 @@ int GetProcessorInfo(HRESULT hRes, IWbemLocator* pLocator, IWbemServices* pServi
             }
             hr = SafeArrayUnaccessData(sfArray);
             if (FAILED(hr)) return hr;
-        }
+        }       
+
+
 
         pclsObj->Release();
 
         cout << endl;
+    }*/
+    IWbemClassObject* clsObj = NULL;
+    /*if (FAILED(hRes = pService->ExecQuery(BSTR(L"WQL"), BSTR(L"SELECT PowerManagementSupported FROM Win32_Processor"),
+        WBEM_FLAG_FORWARD_ONLY, NULL, &pEnumerator))) {
+        pLocator->Release();
+        pService->Release();
+        cout << "Unable to retrive desktop monitors: " << std::hex << hRes << endl;
+        return 1;
+    }*/
+    int numElems;
+    while ((hRes = pEnumerator->Next(WBEM_INFINITE, 1, &clsObj, (ULONG*)&numElems)) != WBEM_S_FALSE)
+    {
+        if (FAILED(hRes)) {
+            break;
+        }
+        VARIANT vRet;
+        VariantInit(&vRet);
+        if (SUCCEEDED(clsObj->Get(L"Manufacturer", 0, &vRet, NULL, NULL)))
+        {
+            std::wcout << L"Manufacturer: " << vRet.bstrVal << endl;
+            VariantClear(&vRet);
+        }
+        if (SUCCEEDED(clsObj->Get(L"Name", 0, &vRet, NULL, NULL)))
+        {
+            std::wcout << L"Name: " << vRet.bstrVal << endl;
+            VariantClear(&vRet);
+        }
+        if (SUCCEEDED(clsObj->Get(L"PowerManagementSupported", 0, &vRet, NULL, NULL)))
+        {
+            auto isSupported = L"";
+            if (vRet.boolVal) {
+                isSupported = L"yes";
+            }
+            else {
+                isSupported = L"no";
+            }
+            std::wcout << L"PowerManagementSupported: " << isSupported << endl;
+            VariantClear(&vRet);
+        }
+        if (SUCCEEDED(clsObj->Get(L"CurrentClockSpeed", 0, &vRet, NULL, NULL)))
+        {
+            std::wcout << L"CurrentClockSpeed: " << vRet.bstrVal << endl;
+            VariantClear(&vRet);
+        }
+
+        clsObj->Release();
     }
 }
