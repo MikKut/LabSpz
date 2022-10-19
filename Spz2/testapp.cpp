@@ -538,7 +538,11 @@ int GetProcessorInfo(HRESULT hRes, IWbemLocator* pLocator, IWbemServices* pServi
         }
         if (SUCCEEDED(clsObj->Get(L"Name", 0, &vRet, NULL, NULL)))
         {
-            std::wcout << L"Name: " << vRet.bstrVal << endl;
+            wstring str(vRet.bstrVal, SysStringLen(vRet.bstrVal));
+            auto str1 = str.substr(0, str.find(L"@"));
+            auto str2 = str.substr(str.find(L"@") +1, str.size() - str.find(L"@"));
+            std::wcout << L"Name: " << str1 << endl;
+            std::wcout << L"Frequency: " << str2 << endl;
             VariantClear(&vRet);
         }
         if (SUCCEEDED(clsObj->Get(L"PowerManagementSupported", 0, &vRet, NULL, NULL)))
@@ -551,11 +555,6 @@ int GetProcessorInfo(HRESULT hRes, IWbemLocator* pLocator, IWbemServices* pServi
                 isSupported = L"no";
             }
             std::wcout << L"PowerManagementSupported: " << isSupported << endl;
-            VariantClear(&vRet);
-        }
-        if (SUCCEEDED(clsObj->Get(L"CurrentClockSpeed", 0, &vRet, NULL, NULL)))
-        {
-            std::wcout << L"CurrentClockSpeed: " << vRet.bstrVal << endl;
             VariantClear(&vRet);
         }
 
