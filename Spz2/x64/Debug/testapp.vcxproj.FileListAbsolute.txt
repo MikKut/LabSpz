@@ -1,0 +1,2 @@
+D:\dz\СПЗ\Projects\Lab2\Spz2\x64\Debug\testapp.exe
+C:\Users\User\Source\Repos\Spz2\x64\Debug\testapp.exe
