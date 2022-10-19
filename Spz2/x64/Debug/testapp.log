@@ -1,5 +1,0 @@
-﻿  testapp.cpp
-C:\Users\User\Source\Repos\Spz2\testapp.cpp(77,12): warning C4311: приведение типов: усечение указателя из "HANDLE" в "HRESULT"
-C:\Users\User\Source\Repos\Spz2\testapp.cpp(77,12): warning C4302: приведение типов: усечение из "HANDLE" к "HRESULT"
-C:\Users\User\Source\Repos\Spz2\testapp.cpp(515): warning C4715: GetProcessorInfo: значение возвращается не при всех путях выполнения
-  testapp.vcxproj -> C:\Users\User\source\repos\Spz2\x64\Debug\testapp.exe
