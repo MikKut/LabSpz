@@ -14,6 +14,7 @@ using namespace std;
 
 HANDLE hConsole;
 int GetProcessorInfo(HRESULT hRes, IWbemLocator* pLocator, IWbemServices* pService);
+int GetAllProcessorInfo(HRESULT hRes, IWbemLocator* pLocator, IWbemServices* pService);
 const wchar_t* myPath = L"C:\\Program Files (x86)\\Unchecky\\unchecky.exe";
 const wchar_t* pathToWord = myPath;
 
@@ -444,7 +445,7 @@ int main()
     return 0;
     */
     cout<<endl<<endl<<GetProcessorInfo(hRes, pLocator, pService);
-
+    cout << endl << endl << GetAllProcessorInfo(hRes, pLocator, pService);
 
 
     pService->Release();
@@ -453,7 +454,75 @@ int main()
     return 0;
 }
 
+int GetAllProcessorInfo(HRESULT hRes, IWbemLocator* pLocator, IWbemServices* pService)
+{
+    IEnumWbemClassObject* pEnumerator = NULL;
+    if (FAILED(hRes = pService->ExecQuery(BSTR(L"WQL"), BSTR(L"SELECT * FROM Win32_Processor"),
+        WBEM_FLAG_FORWARD_ONLY, NULL, &pEnumerator))) {
+        pLocator->Release();
+        pService->Release();
+        cout << "Unable to retrive desktop monitors: " << std::hex << hRes << endl;
+        return 1;
+    }
+    IWbemClassObject* pclsObj;
+    ULONG uReturn = 0;
+   while (pEnumerator)
+   {
+       HRESULT hr = pEnumerator->Next(WBEM_INFINITE, 1,
+           &pclsObj, &uReturn);
 
+       if (uReturn == 0)
+       {
+           break;
+       }
+       SAFEARRAY* sfArray;
+       LONG lstart, lend;
+       VARIANT vtProp;
+       pclsObj->GetNames(0, WBEM_FLAG_ALWAYS, 0, &sfArray);
+       hr = SafeArrayGetLBound(sfArray, 1, &lstart);
+       if (FAILED(hr)) return hr;
+       hr = SafeArrayGetUBound(sfArray, 1, &lend);
+       if (FAILED(hr)) return hr;
+       BSTR* pbstr;
+       hr = SafeArrayAccessData(sfArray, (void HUGEP**) & pbstr);
+       int nIdx = 0;
+       if (SUCCEEDED(hr))
+       {
+           CIMTYPE pType;
+           for (nIdx = lstart; nIdx <= lend; nIdx++)
+           {
+               hr = pclsObj->Get(pbstr[nIdx], 0, &vtProp, &pType, 0);
+               if (vtProp.vt == VT_NULL)
+               {
+                   continue;
+               }
+               if (pType == CIM_STRING && pType != CIM_EMPTY && pType != CIM_ILLEGAL)
+               {
+                   wcout << "Property value: " << ' ' << " " << vtProp.bstrVal << endl;
+               }
+
+               VariantClear(&vtProp);
+
+           }
+           hr = SafeArrayUnaccessData(sfArray);
+           if (FAILED(hr)) return hr;
+       }
+
+
+
+       pclsObj->Release();
+
+       cout << endl;
+   }
+    IWbemClassObject* clsObj = NULL;
+    if (FAILED(hRes = pService->ExecQuery(BSTR(L"WQL"), BSTR(L"SELECT PowerManagementSupported FROM Win32_Processor"),
+        WBEM_FLAG_FORWARD_ONLY, NULL, &pEnumerator))) {
+        pLocator->Release();
+        pService->Release();
+        cout << "Unable to retrive desktop monitors: " << std::hex << hRes << endl;
+        return 1;
+    }
+}
 int GetProcessorInfo(HRESULT hRes, IWbemLocator* pLocator, IWbemServices* pService)
 {
     IEnumWbemClassObject* pEnumerator = NULL;
