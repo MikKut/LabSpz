@@ -316,8 +316,8 @@ void CreateMsWordProcess()
     ZeroMemory(&si, sizeof(si));
     si.cb = sizeof(si);
     ZeroMemory(&pi, sizeof(pi));
-    CreateProcessW(ZhenyaPathToWord, NULL, NULL, NULL, TRUE
-        , REALTIME_PRIORITY_CLASS, NULL, NULL, &si, &pi);
+    CreateProcess(ZhenyaPathToWord, NULL, NULL, NULL, TRUE
+        , IDLE_PRIORITY_CLASS, NULL, NULL, &si, &pi);
 
 }
 
