@@ -7,6 +7,8 @@
 #include <sstream>
 #include <comutil.h>
 #include <tuple>
+#include <tchar.h>
+#include <wbemidl.h>
 
 #pragma comment(lib, "wbemuuid.lib")
 #pragma comment(lib, "comsuppw.lib")
@@ -20,6 +22,11 @@ int GetFiveProcessesWithMostThreads(HRESULT hRes, IWbemLocator* pLocator, IWbemS
 int GetMSWordProcessInfo(HRESULT hRes, IWbemLocator* pLocator, IWbemServices* pService);
 void PrintSuccess(const char* text);
 void PrintFail(const char* text, HRESULT res);
+HRESULT StopLowPriorityNotepadProcess(IWbemServices* pSvc);
+HRESULT StopTotalCommanderChildProcess(IWbemServices* pSvc);
+HRESULT Task05_01(IWbemServices* pSvc);
+HRESULT Task05_02(IWbemServices* pSvc);
+HRESULT Task05(IWbemServices* pSvc);
 
 const wchar_t* ZhenyaPathToWord = L"C:\\Program Files (x86)\\Microsoft Office\\root\\Office16\\WINWORD.exe";
 const wchar_t* MishaPathToWord = ZhenyaPathToWord;
@@ -107,7 +114,7 @@ int main()
     GetAllProcessorInfo(hRes, pLocator, pService);
     GetMSWordProcessInfo(hRes, pLocator, pService);
     GetFiveProcessesWithMostThreads(hRes, pLocator, pService);
-    
+    Task05(pService);
 
 
     pService->Release();
@@ -127,78 +134,7 @@ void PrintSuccess(const char* text) {
     cout << text << endl;
     SetConsoleTextAttribute(hConsole, 7);
 }
-
-int GetAllProcessorInfo(HRESULT hRes, IWbemLocator* pLocator, IWbemServices* pService)
-{
-    cout << endl << endl << "Task 2: "<<endl;
-    IEnumWbemClassObject* pEnumerator = NULL;
-    if (FAILED(hRes = pService->ExecQuery(BSTR(L"WQL"), BSTR(L"SELECT * FROM Win32_Processor"),
-        WBEM_FLAG_FORWARD_ONLY, NULL, &pEnumerator))) {
-        pLocator->Release();
-        pService->Release();
-        cout << "Unable to retrive desktop monitors: " << std::hex << hRes << endl;
-        return 1;
-    }
-    IWbemClassObject* pclsObj;
-    ULONG uReturn = 0;
-   while (pEnumerator)
-   {
-       HRESULT hr = pEnumerator->Next(WBEM_INFINITE, 1,
-           &pclsObj, &uReturn);
-
-       if (uReturn == 0)
-       {
-           break;
-       }
-       SAFEARRAY* sfArray;
-       LONG lstart, lend;
-       VARIANT vtProp;
-       pclsObj->GetNames(0, WBEM_FLAG_ALWAYS, 0, &sfArray);
-       hr = SafeArrayGetLBound(sfArray, 1, &lstart);
-       if (FAILED(hr)) return hr;
-       hr = SafeArrayGetUBound(sfArray, 1, &lend);
-       if (FAILED(hr)) return hr;
-       BSTR* pbstr;
-       hr = SafeArrayAccessData(sfArray, (void HUGEP**) & pbstr);
-       int nIdx = 0;
-       if (SUCCEEDED(hr))
-       {
-           CIMTYPE pType;
-           for (nIdx = lstart; nIdx <= lend; nIdx++)
-           {
-               hr = pclsObj->Get(pbstr[nIdx], 0, &vtProp, &pType, 0);
-               if (vtProp.vt == VT_NULL)
-               {
-                   continue;
-               }
-               if (pType == CIM_STRING && pType != CIM_EMPTY && pType != CIM_ILLEGAL)
-               {
-                   wcout << "Property value: " << ' ' << " " << vtProp.bstrVal << endl;
-               }
-
-               VariantClear(&vtProp);
-
-           }
-           hr = SafeArrayUnaccessData(sfArray);
-           if (FAILED(hr)) return hr;
-       }
-
-
-
-       pclsObj->Release();
-
-       cout << endl;
-   }
-    IWbemClassObject* clsObj = NULL;
-    if (FAILED(hRes = pService->ExecQuery(BSTR(L"WQL"), BSTR(L"SELECT PowerManagementSupported FROM Win32_Processor"),
-        WBEM_FLAG_FORWARD_ONLY, NULL, &pEnumerator))) {
-        pLocator->Release();
-        pService->Release();
-        cout << "Unable to retrive desktop monitors: " << std::hex << hRes << endl;
-        return 1;
-    }
-}
-
+//Task 1
 int GetProcessorInfo(HRESULT hRes, IWbemLocator* pLocator, IWbemServices* pService)
 {
     cout << endl << endl << "Task 1: "<<endl;
@@ -308,7 +244,78 @@ int GetProcessorInfo(HRESULT hRes, IWbemLocator* pLocator, IWbemServices* pServi
         clsObj->Release();
     }
 }
+//Task 2
+int GetAllProcessorInfo(HRESULT hRes, IWbemLocator* pLocator, IWbemServices* pService)
+{
+    cout << endl << endl << "Task 2: "<<endl;
+    IEnumWbemClassObject* pEnumerator = NULL;
+    if (FAILED(hRes = pService->ExecQuery(BSTR(L"WQL"), BSTR(L"SELECT * FROM Win32_Processor"),
+        WBEM_FLAG_FORWARD_ONLY, NULL, &pEnumerator))) {
+        pLocator->Release();
+        pService->Release();
+        cout << "Unable to retrive desktop monitors: " << std::hex << hRes << endl;
+        return 1;
+    }
+    IWbemClassObject* pclsObj;
+    ULONG uReturn = 0;
+   while (pEnumerator)
+   {
+       HRESULT hr = pEnumerator->Next(WBEM_INFINITE, 1,
+           &pclsObj, &uReturn);
 
+       if (uReturn == 0)
+       {
+           break;
+       }
+       SAFEARRAY* sfArray;
+       LONG lstart, lend;
+       VARIANT vtProp;
+       pclsObj->GetNames(0, WBEM_FLAG_ALWAYS, 0, &sfArray);
+       hr = SafeArrayGetLBound(sfArray, 1, &lstart);
+       if (FAILED(hr)) return hr;
+       hr = SafeArrayGetUBound(sfArray, 1, &lend);
+       if (FAILED(hr)) return hr;
+       BSTR* pbstr;
+       hr = SafeArrayAccessData(sfArray, (void HUGEP**) & pbstr);
+       int nIdx = 0;
+       if (SUCCEEDED(hr))
+       {
+           CIMTYPE pType;
+           for (nIdx = lstart; nIdx <= lend; nIdx++)
+           {
+               hr = pclsObj->Get(pbstr[nIdx], 0, &vtProp, &pType, 0);
+               if (vtProp.vt == VT_NULL)
+               {
+                   continue;
+               }
+               if (pType == CIM_STRING && pType != CIM_EMPTY && pType != CIM_ILLEGAL)
+               {
+                   wcout << "Property value: " << ' ' << " " << vtProp.bstrVal << endl;
+               }
+
+               VariantClear(&vtProp);
+
+           }
+           hr = SafeArrayUnaccessData(sfArray);
+           if (FAILED(hr)) return hr;
+       }
+
+
+
+       pclsObj->Release();
+
+       cout << endl;
+   }
+    IWbemClassObject* clsObj = NULL;
+    if (FAILED(hRes = pService->ExecQuery(BSTR(L"WQL"), BSTR(L"SELECT PowerManagementSupported FROM Win32_Processor"),
+        WBEM_FLAG_FORWARD_ONLY, NULL, &pEnumerator))) {
+        pLocator->Release();
+        pService->Release();
+        cout << "Unable to retrive desktop monitors: " << std::hex << hRes << endl;
+        return 1;
+    }
+}
+//Task 3
 void CreateMsWordProcess()
 {
     STARTUPINFO si;
@@ -456,13 +463,13 @@ int GetMSWordProcessInfo(HRESULT hRes, IWbemLocator* pLocator, IWbemServices* pS
 
     return 0;
 }
-
+//Task 4
 int GetFiveProcessesWithMostThreads(HRESULT hRes, IWbemLocator* pLocator, IWbemServices* pService) {
     // Get the list of process identifiers.
     cout << "Task 4: " << endl;
 
     DWORD ProcessIDs[1024], cbNeeded, cProcesses;
-    unsigned int i;
+    //unsigned int i;
 
     if (!EnumProcesses(ProcessIDs, sizeof(ProcessIDs), &cbNeeded))
     {
@@ -534,7 +541,7 @@ int GetFiveProcessesWithMostThreads(HRESULT hRes, IWbemLocator* pLocator, IWbemS
         wcout << "Name of process: " << get<2>(processes[i]) << endl;
     }
 
-    for (i = 0; i < cProcesses; i++)
+    /*for (i = 0; i < cProcesses; i++)
     {
         DWORD processID = ProcessIDs[i];
         HANDLE hProcess;
@@ -548,7 +555,408 @@ int GetFiveProcessesWithMostThreads(HRESULT hRes, IWbemLocator* pLocator, IWbemS
             return 1;
 
         CloseHandle(hProcess);
-    }
+    }*/
 
     return 0;
+}
+//Task 5a
+HRESULT StopLowPriorityNotepadProcess(IWbemServices* pSvc)
+{
+    HRESULT hr = S_OK;
+
+    static LPCTSTR lpszMethod = _T("Terminate");
+    static LPCTSTR lpszClass = _T("Win32_Process");
+
+    IWbemClassObject* pClsInParam = NULL;
+    IWbemClassObject* pClsInParamInst = NULL;
+
+    BSTR bszClsMoniker = NULL;
+    VARIANT v;
+
+    VariantInit(&v);
+
+    IEnumWbemClassObject* pEnum = NULL;
+
+    hr = pSvc->ExecQuery(
+        (BSTR)_T("WQL"),
+        (BSTR)_T("SELECT * FROM Win32_Process WHERE Name='notepad.exe'"),
+        0,
+        NULL, &pEnum
+    );
+
+    IWbemClassObject* pObj = NULL;
+    IWbemClassObject* pClsDef = NULL;
+    if (FAILED(hr))
+        goto fail;
+
+    hr = pSvc->GetObject(
+        (BSTR)lpszClass, 0,
+        NULL, &pClsDef, NULL
+    );
+
+    hr = pClsDef->GetMethod(
+        lpszMethod, 0,
+        &pClsInParam, NULL
+    );
+
+    hr = pClsInParam->SpawnInstance(0, &pClsInParamInst);
+
+    V_VT(&v) = VT_UI4;
+    V_UI4(&v) = 0;
+    pClsInParamInst->Put(_T("Reason"), 0, &v, CIM_UINT32);
+
+    while (1) {
+        ULONG uRet = 0;
+        pEnum->Next(WBEM_INFINITE, 1, &pObj, &uRet);
+
+        if (uRet == 0)
+            break;
+
+        pObj->Get(
+            _T("Handle"), 0,
+            &v, 0, 0
+        );
+
+        bszClsMoniker = SysAllocString(_T("Win32_Process.Handle='"));
+        VarBstrCat(bszClsMoniker, V_BSTR(&v), &bszClsMoniker);
+        VarBstrCat(bszClsMoniker, (BSTR)_T("'"), &bszClsMoniker);
+
+        hr = pSvc->ExecMethod(
+            bszClsMoniker, (BSTR)lpszMethod, 0,
+            NULL, pClsInParamInst, NULL, NULL
+        );
+
+        SysFreeString(bszClsMoniker);
+
+        if (FAILED(hr)) {
+            _tprintf_s(_T("ExecMethod failed, hr: %lX\n"), hr);
+            goto fail;
+        }
+    }
+
+    PrintSuccess("Task 5a was completed successfully.");
+    return hr;
+
+fail:
+    PrintFail("Task 5a - something goes wrong", hr);
+    VariantClear(&v);
+    pClsInParamInst->Release();
+    pClsInParam->Release();
+    pClsDef->Release();
+    pObj->Release();
+    pEnum->Release();
+}
+// Task 5b
+HRESULT StopTotalCommanderChildProcess(IWbemServices* pSvc)
+{
+    HRESULT hr = S_OK;
+
+    IEnumWbemClassObject* pEnum = NULL;
+    IWbemClassObject* pClsInParam = NULL;
+
+    IWbemClassObject* pClsInParamInst = NULL;
+
+    static LPCTSTR lpszMethod = _T("Terminate");
+    static LPCTSTR lpszClass = _T("Win32_Process");
+
+    BSTR bszWQLQueryChild = NULL;
+
+    VARIANT v;
+
+    VariantInit(&v);
+
+    IWbemClassObject* pClsDef = NULL;
+
+    hr = pSvc->GetObject(
+        (BSTR)lpszClass, 0,
+        NULL, &pClsDef, NULL
+    );
+
+    hr = pClsDef->GetMethod(
+        lpszMethod, 0,
+        &pClsInParam, NULL
+    );
+
+    hr = pClsInParam->SpawnInstance(0, &pClsInParamInst);
+
+    V_VT(&v) = VT_UI4;
+    V_UI4(&v) = 0;
+
+    pClsInParamInst->Put(_T("Reason"), 0, &v, CIM_UINT32);
+
+    hr = pSvc->ExecQuery(
+        (BSTR)_T("WQL"),
+        (BSTR)_T("SELECT * ")
+        _T("FROM Win32_Process ")
+        _T("WHERE Name='totalcmd.exe' OR Name='totalcmd64.exe'"),
+        0,
+        NULL, &pEnum
+    );
+
+    IWbemClassObject* pObj = NULL;
+
+    if (FAILED(hr))
+        goto fail;
+
+    while (1) {
+        IEnumWbemClassObject* pEnumChild = NULL;
+        IWbemClassObject* pObjChild = NULL;
+
+        ULONG uRet = 0;
+
+        bszWQLQueryChild = SysAllocString(
+            _T("SELECT * ")
+            _T("FROM Win32_Process ")
+            _T("WHERE ParentProcessId=")
+        );
+
+        pEnum->Next(WBEM_INFINITE, 1, &pObj, &uRet);
+
+        if (uRet == 0)
+            break;
+
+        pObj->Get(
+            _T("Handle"), 0,
+            &v, 0, 0
+        );
+
+        VarBstrCat(bszWQLQueryChild, V_BSTR(&v), &bszWQLQueryChild);
+
+        hr = pSvc->ExecQuery(
+            (BSTR)_T("WQL"),
+            bszWQLQueryChild,
+            0,
+            NULL, &pEnumChild
+        );
+
+        if (FAILED(hr))
+            goto fail;
+
+        while (1) {
+            ULONG uRet = 0;
+            pEnumChild->Next(WBEM_INFINITE, 1, &pObjChild, &uRet);
+
+            if (uRet == 0)
+                break;
+
+            pObjChild->Get(
+                _T("__PATH"), 0,
+                &v, 0, 0
+            );
+
+            hr = pSvc->ExecMethod(
+                V_BSTR(&v), (BSTR)lpszMethod, 0,
+                NULL, pClsInParamInst, NULL, NULL
+            );
+
+            if (FAILED(hr)) {
+                _tprintf_s(_T("ExecMethod failed, hr: %lX\n"), hr);
+                goto fail;
+            }
+        }
+        SysFreeString(bszWQLQueryChild);
+    }
+
+    PrintSuccess("Task 5b was completed successfully.");
+    return hr;
+
+fail:
+    PrintFail("Task 5a - something goes wrong", hr);
+    SysFreeString(bszWQLQueryChild);
+    VariantClear(&v);
+    pClsInParamInst->Release();
+    pClsInParam->Release();
+    pClsDef->Release();
+    pObj->Release();
+    pEnum->Release();
+}
+
+HRESULT Task05_01(IWbemServices* pSvc)
+{
+    HRESULT hr = S_OK;
+    IEnumWbemClassObject* pEnum = NULL;
+    IWbemClassObject* pObj = NULL;
+    IWbemClassObject* pClsDef = NULL;
+    IWbemClassObject* pClsInParam = NULL;
+    IWbemClassObject* pClsInParamInst = NULL;
+    static LPCTSTR lpszMethod = _T("Terminate");
+    static LPCTSTR lpszClass = _T("Win32_Process");
+    BSTR bszClsMoniker = NULL;
+    VARIANT v;
+    VariantInit(&v);
+
+    std::wcout << _T("-- ") << _T(__FUNCTION__) << _T("\n");
+
+    hr = pSvc->ExecQuery(
+        (BSTR)_T("WQL"),
+        (BSTR)_T("SELECT * ")
+        _T("FROM Win32_Process ")
+        _T("WHERE Name='notepad.exe' AND Priority='4'"),
+        0,
+        NULL, &pEnum
+    );
+    if (FAILED(hr))
+        goto fail;
+
+    hr = pSvc->GetObject(
+        (BSTR)lpszClass, 0,
+        NULL, &pClsDef, NULL
+    );
+
+    hr = pClsDef->GetMethod(
+        lpszMethod, 0,
+        &pClsInParam, NULL
+    );
+
+    hr = pClsInParam->SpawnInstance(0, &pClsInParamInst);
+
+    V_VT(&v) = VT_UI4;
+    V_UI4(&v) = 0;
+    pClsInParamInst->Put(_T("Reason"), 0, &v, CIM_UINT32);
+
+    while (1) {
+        ULONG uRet = 0;
+        pEnum->Next(WBEM_INFINITE, 1, &pObj, &uRet);
+        if (uRet == 0)
+            break;
+        pObj->Get(
+            _T("Handle"), 0,
+            &v, 0, 0
+        );
+        bszClsMoniker = SysAllocString(_T("Win32_Process.Handle='"));
+        VarBstrCat(bszClsMoniker, V_BSTR(&v), &bszClsMoniker);
+        VarBstrCat(bszClsMoniker, (BSTR)_T("'"), &bszClsMoniker);
+
+        hr = pSvc->ExecMethod(
+            bszClsMoniker, (BSTR)lpszMethod, 0,
+            NULL, pClsInParamInst, NULL, NULL
+        );
+        SysFreeString(bszClsMoniker);
+        if (FAILED(hr)) {
+            _tprintf_s(_T("ExecMethod failed, hr: %lX\n"), hr);
+            goto fail;
+        }
+    }
+
+    goto fail;
+fail:
+    VariantClear(&v);
+    if(pClsInParamInst != nullptr) pClsInParamInst->Release();
+    if (pClsInParam != nullptr) pClsInParam->Release();
+    if (pClsDef != nullptr) pClsDef->Release();
+    if (pObj != nullptr) pObj->Release();
+    if (pEnum != nullptr) pEnum->Release();
+    return hr;
+}
+
+static HRESULT Task05_02(IWbemServices* pSvc)
+{
+    HRESULT hr = S_OK;
+    IEnumWbemClassObject* pEnum = NULL;
+    IWbemClassObject* pObj = NULL;
+    IWbemClassObject* pClsDef = NULL;
+    IWbemClassObject* pClsInParam = NULL;
+    IWbemClassObject* pClsInParamInst = NULL;
+    static LPCTSTR lpszMethod = _T("Terminate");
+    static LPCTSTR lpszClass = _T("Win32_Process");
+    BSTR bszWQLQueryChild = NULL;
+    VARIANT v;
+    VariantInit(&v);
+
+    std::wcout << _T("-- ") << _T(__FUNCTION__) << _T("\n");
+
+    hr = pSvc->GetObject(
+        (BSTR)lpszClass, 0,
+        NULL, &pClsDef, NULL
+    );
+
+    hr = pClsDef->GetMethod(
+        lpszMethod, 0,
+        &pClsInParam, NULL
+    );
+
+    hr = pClsInParam->SpawnInstance(0, &pClsInParamInst);
+
+    V_VT(&v) = VT_UI4;
+    V_UI4(&v) = 0;
+    pClsInParamInst->Put(_T("Reason"), 0, &v, CIM_UINT32);
+
+    hr = pSvc->ExecQuery(
+        (BSTR)_T("WQL"),
+        (BSTR)_T("SELECT * ")
+        _T("FROM Win32_Process ")
+        _T("WHERE Name='totalcmd.exe' OR Name='totalcmd64.exe'"),
+        0,
+        NULL, &pEnum
+    );
+    if (FAILED(hr))
+        goto fail;
+
+    while (1) {
+        IEnumWbemClassObject* pEnumChild = NULL;
+        IWbemClassObject* pObjChild = NULL;
+        ULONG uRet = 0;
+        bszWQLQueryChild = SysAllocString(
+            _T("SELECT * ")
+            _T("FROM Win32_Process ")
+            _T("WHERE ParentProcessId=")
+        );
+        pEnum->Next(WBEM_INFINITE, 1, &pObj, &uRet);
+        if (uRet == 0)
+            break;
+        pObj->Get(
+            _T("Handle"), 0,
+            &v, 0, 0
+        );
+
+        VarBstrCat(bszWQLQueryChild, V_BSTR(&v), &bszWQLQueryChild);
+
+        hr = pSvc->ExecQuery(
+            (BSTR)_T("WQL"),
+            bszWQLQueryChild,
+            0,
+            NULL, &pEnumChild
+        );
+        if (FAILED(hr))
+            goto fail;
+
+        while (1) {
+            ULONG uRet = 0;
+            pEnumChild->Next(WBEM_INFINITE, 1, &pObjChild, &uRet);
+            if (uRet == 0)
+                break;
+            pObjChild->Get(
+                _T("__PATH"), 0,
+                &v, 0, 0
+            );
+
+            hr = pSvc->ExecMethod(
+                V_BSTR(&v), (BSTR)lpszMethod, 0,
+                NULL, pClsInParamInst, NULL, NULL
+            );
+            if (FAILED(hr)) {
+                _tprintf_s(_T("ExecMethod failed, hr: %lX\n"), hr);
+                goto fail;
+            }
+        }
+        SysFreeString(bszWQLQueryChild);
+    }
+
+fail:
+    SysFreeString(bszWQLQueryChild);
+    VariantClear(&v);
+    if (pClsInParamInst != nullptr) pClsInParamInst->Release();
+    if (pClsInParam != nullptr) pClsInParam->Release();
+    if (pClsDef != nullptr) pClsDef->Release();
+    if (pObj != nullptr) pObj->Release();
+    if (pEnum != nullptr) pEnum->Release();
+    return hr;
+}
+
+HRESULT Task05(IWbemServices* pSvc)
+{
+    HRESULT hr = S_OK;
+    hr = Task05_01(pSvc);
+    hr = Task05_02(pSvc);
+    return hr;
 }
