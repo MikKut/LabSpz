@@ -1,0 +1,280 @@
+Con library has been successfully initialized
+Security layers has been successfully initialized
+WbemLocator has been successfully created
+Connection to server has been successfully created
+
+
+Task 1:
+Manufacturer: GenuineIntel
+Name: Intel(R) Core(TM) i5-9300H CPU
+Frequency:  2.40GHz
+PowerManagementSupported: no
+
+
+Task 2:
+Property value:   Win32_Processor
+Property value:   CIM_Processor
+Property value:   CIM_ManagedSystemElement
+Property value:   Win32_Processor.DeviceID="CPU0"
+Property value:   DESKTOP-GGPR8F2
+Property value:   root\CIMV2
+Property value:   \\DESKTOP-GGPR8F2\root\CIMV2:Win32_Processor.DeviceID="CPU0"
+Property value:   To Be Filled By O.E.M.
+Property value:   Intel64 Family 6 Model 158 Stepping 10
+Property value:   Win32_Processor
+Property value:   Intel64 Family 6 Model 158 Stepping 10
+Property value:   CPU0
+Property value:   GenuineIntel
+Property value:   Intel(R) Core(TM) i5-9300H CPU @ 2.40GHz
+Property value:   To Be Filled By O.E.M.
+Property value:   BFEBFBFF000906EA
+Property value:   CPU
+Property value:   To Be Filled By O.E.M.
+Property value:   U3E1
+Property value:   OK
+Property value:   Win32_ComputerSystem
+Property value:   DESKTOP-GGPR8F2
+Property value:
+
+
+
+Task 3:
+Path: C:\Program Files (x86)\Microsoft Office\Root\Office16\WINWORD.EXE
+Name: WINWORD.EXE
+Priority: 8
+Id: 8792
+Thread count: 34
+
+Id that created process: 392399672
+Dynamics priority: 10
+Base priority: 8
+Time spent: 392399672
+State: 5
+
+Id that created process: 392399672
+Dynamics priority: 9
+Base priority: 8
+Time spent: 392399672
+State: 5
+
+Id that created process: 392399672
+Dynamics priority: 8
+Base priority: 8
+Time spent: 392399672
+State: 5
+
+Id that created process: 392399672
+Dynamics priority: 8
+Base priority: 8
+Time spent: 392399672
+State: 5
+
+Id that created process: 392399672
+Dynamics priority: 8
+Base priority: 8
+Time spent: 392399672
+State: 5
+
+Id that created process: 392399672
+Dynamics priority: 8
+Base priority: 8
+Time spent: 392399672
+State: 5
+
+Id that created process: 392399672
+Dynamics priority: 8
+Base priority: 8
+Time spent: 392399672
+State: 5
+
+Id that created process: 392399672
+Dynamics priority: 8
+Base priority: 8
+Time spent: 392399672
+State: 5
+
+Id that created process: 392399672
+Dynamics priority: 8
+Base priority: 8
+Time spent: 392399672
+State: 5
+
+Id that created process: 392399672
+Dynamics priority: 8
+Base priority: 8
+Time spent: 392399672
+State: 5
+
+Id that created process: 392399672
+Dynamics priority: 8
+Base priority: 8
+Time spent: 392399672
+State: 5
+
+Id that created process: 392399672
+Dynamics priority: 8
+Base priority: 8
+Time spent: 392399672
+State: 5
+
+Id that created process: 392399672
+Dynamics priority: 8
+Base priority: 8
+Time spent: 392399672
+State: 5
+
+Id that created process: 392399672
+Dynamics priority: 8
+Base priority: 8
+Time spent: 392399672
+State: 5
+
+Id that created process: 392399672
+Dynamics priority: 8
+Base priority: 8
+Time spent: 392399672
+State: 5
+
+Id that created process: 392399672
+Dynamics priority: 8
+Base priority: 8
+Time spent: 392399672
+State: 5
+
+Id that created process: 392399672
+Dynamics priority: 8
+Base priority: 8
+Time spent: 392399672
+State: 5
+
+Id that created process: 392399672
+Dynamics priority: 10
+Base priority: 8
+Time spent: 392399672
+State: 5
+
+Id that created process: 392399672
+Dynamics priority: 8
+Base priority: 8
+Time spent: 392399672
+State: 5
+
+Id that created process: 392399672
+Dynamics priority: 9
+Base priority: 8
+Time spent: 392399672
+State: 5
+
+Id that created process: 392399672
+Dynamics priority: 9
+Base priority: 8
+Time spent: 392399672
+State: 5
+
+Id that created process: 392399672
+Dynamics priority: 8
+Base priority: 8
+Time spent: 392399672
+State: 5
+
+Id that created process: 392399672
+Dynamics priority: 8
+Base priority: 8
+Time spent: 392399672
+State: 5
+
+Id that created process: 392399672
+Dynamics priority: 8
+Base priority: 8
+Time spent: 392399672
+State: 5
+
+Id that created process: 392399672
+Dynamics priority: 8
+Base priority: 8
+Time spent: 392399672
+State: 5
+
+Id that created process: 392399672
+Dynamics priority: 8
+Base priority: 8
+Time spent: 392399672
+State: 5
+
+Id that created process: 392399672
+Dynamics priority: 8
+Base priority: 8
+Time spent: 392399672
+State: 5
+
+Id that created process: 392399672
+Dynamics priority: 8
+Base priority: 8
+Time spent: 392399672
+State: 5
+
+Id that created process: 392399672
+Dynamics priority: 8
+Base priority: 8
+Time spent: 392399672
+State: 5
+
+Id that created process: 392399672
+Dynamics priority: 8
+Base priority: 8
+Time spent: 392399672
+State: 5
+
+Id that created process: 392399672
+Dynamics priority: 8
+Base priority: 8
+Time spent: 392399672
+State: 5
+
+Id that created process: 392399672
+Dynamics priority: 8
+Base priority: 8
+Time spent: 392399672
+State: 5
+
+Id that created process: 392399672
+Dynamics priority: 8
+Base priority: 8
+Time spent: 392399672
+State: 5
+
+Id that created process: 392399672
+Dynamics priority: 8
+Base priority: 8
+Time spent: 392399672
+State: 5
+
+
+Task 4:
+5 processes with the most amount of threads:
+
+Process ID: 4
+Threads: 280
+Name of process: WINWORD.EXE
+
+Process ID: 11844
+Threads: 92
+Name of process: TiWorker.exe
+
+Process ID: 4248
+Threads: 85
+Name of process: TiWorker.exe
+
+Process ID: 10712
+Threads: 79
+Name of process: TiWorker.exe
+
+Process ID: 12804
+Threads: 79
+Name of process: WINWORD.EXE
+-- Task05_01
+-- Task05_02
+
+C:\универ\спз\LabSpz\Spz2\x64\Debug\testapp.exe (process 22588) exited with code 0.
+To automatically close the console when debugging stops, enable Tools->Options->Debugging->Automatically close the console when debugging stops.
+Press any key to close this window . . .

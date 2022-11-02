@@ -428,3 +428,4 @@ FodyWeavers.xsd
 *.exe
 *.out
 *.app
+.vs

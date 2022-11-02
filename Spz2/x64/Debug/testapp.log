@@ -1,0 +1,7 @@
+﻿  testapp.cpp
+C:\универ\спз\LabSpz\Spz2\testapp.cpp(150,23): warning C4101: 'pclsObj': unreferenced local variable
+C:\универ\спз\LabSpz\Spz2\testapp.cpp(246): warning C4715: 'GetProcessorInfo': not all control paths return a value
+C:\универ\спз\LabSpz\Spz2\testapp.cpp(317): warning C4715: 'GetAllProcessorInfo': not all control paths return a value
+C:\универ\спз\LabSpz\Spz2\testapp.cpp(648): warning C4715: 'StopLowPriorityNotepadProcess': not all control paths return a value
+C:\универ\спз\LabSpz\Spz2\testapp.cpp(772): warning C4715: 'StopTotalCommanderChildProcess': not all control paths return a value
+  testapp.vcxproj -> C:\универ\спз\LabSpz\Spz2\x64\Debug\testapp.exe
