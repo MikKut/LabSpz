@@ -24,9 +24,9 @@ void PrintSuccess(const char* text);
 void PrintFail(const char* text, HRESULT res);
 HRESULT StopLowPriorityNotepadProcess(IWbemServices* pSvc);
 HRESULT StopTotalCommanderChildProcess(IWbemServices* pSvc);
-HRESULT Task05_01(IWbemServices* pSvc);
-HRESULT Task05_02(IWbemServices* pSvc);
-HRESULT Task05(IWbemServices* pSvc);
+HRESULT Task5_1(IWbemServices* pSvc);
+HRESULT Task5_2(IWbemServices* pSvc);
+HRESULT Task5(IWbemServices* pSvc);
 
 const wchar_t* ZhenyaPathToWord = L"C:\\Program Files (x86)\\Microsoft Office\\root\\Office16\\WINWORD.exe";
 const wchar_t* MishaPathToWord = ZhenyaPathToWord;
@@ -114,7 +114,7 @@ int main()
     GetAllProcessorInfo(hRes, pLocator, pService);
     GetMSWordProcessInfo(hRes, pLocator, pService);
     GetFiveProcessesWithMostThreads(hRes, pLocator, pService);
-    Task05(pService);
+    Task5(pService);
 
 
     pService->Release();
@@ -771,7 +771,7 @@ fail:
     pEnum->Release();
 }
 
-HRESULT Task05_01(IWbemServices* pSvc)
+HRESULT Task5_1(IWbemServices* pSvc)
 {
     HRESULT hr = S_OK;
     IEnumWbemClassObject* pEnum = NULL;
@@ -823,7 +823,7 @@ HRESULT Task05_01(IWbemServices* pSvc)
             _T("Handle"), 0,
             &v, 0, 0
         );
-        bszClsMoniker = SysAllocString(_T("Win32_Process.Handle='"));
+        bszClsMoniker = SysAllocString(_T("Win32_Process.Handle="));
         VarBstrCat(bszClsMoniker, V_BSTR(&v), &bszClsMoniker);
         VarBstrCat(bszClsMoniker, (BSTR)_T("'"), &bszClsMoniker);
 
@@ -849,7 +849,7 @@ fail:
     return hr;
 }
 
-static HRESULT Task05_02(IWbemServices* pSvc)
+static HRESULT Task5_2(IWbemServices* pSvc)
 {
     HRESULT hr = S_OK;
     IEnumWbemClassObject* pEnum = NULL;
@@ -953,10 +953,10 @@ fail:
     return hr;
 }
 
-HRESULT Task05(IWbemServices* pSvc)
+HRESULT Task5(IWbemServices* pSvc)
 {
     HRESULT hr = S_OK;
-    hr = Task05_01(pSvc);
-    hr = Task05_02(pSvc);
+    hr = Task5_1(pSvc);
+    hr = Task5_2(pSvc);
     return hr;
 }
